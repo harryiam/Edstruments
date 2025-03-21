@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -13,13 +13,13 @@ const RegisterPage = () => {
       const response = await fetch('http://localhost:5000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: values.username, password: values.password }),
+        body: JSON.stringify(values),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('session', JSON.stringify(values));
+        localStorage.setItem('session', JSON.stringify(data.user));
         navigate('/dashboard');
       } else {
         setErrors({ username: data.message });
@@ -39,7 +39,7 @@ const RegisterPage = () => {
           initialValues={{ username: '', password: '', confirmPassword: '' }}
           validationSchema={Yup.object({
             username: Yup.string().required('Username is required'),
-            password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+            password: Yup.string().required('Password is required'),
             confirmPassword: Yup.string()
               .oneOf([Yup.ref('password'), null], 'Passwords must match')
               .required('Confirm Password is required'),
@@ -53,6 +53,7 @@ const RegisterPage = () => {
                 <Field name="username" className="w-full p-2 border rounded" />
                 <ErrorMessage name="username" className="text-red-500 text-sm" component="div" />
               </div>
+
               <div className="relative">
                 <label className="block mb-1">Password</label>
                 <div className="flex items-center">
@@ -71,6 +72,7 @@ const RegisterPage = () => {
                 </div>
                 <ErrorMessage name="password" className="text-red-500 text-sm" component="div" />
               </div>
+
               <div className="relative">
                 <label className="block mb-1">Confirm Password</label>
                 <div className="flex items-center">
@@ -89,16 +91,24 @@ const RegisterPage = () => {
                 </div>
                 <ErrorMessage name="confirmPassword" className="text-red-500 text-sm" component="div" />
               </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
+                className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
               >
                 Register
               </button>
             </Form>
           )}
         </Formik>
+
+        {/* Login Link */}
+        <div className="text-center mt-4">
+          <p className="text-gray-600">
+            Already have an account? <Link to="/" className="text-blue-600 hover:underline">Login</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

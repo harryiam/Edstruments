@@ -18,7 +18,7 @@ const LoginPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('session', JSON.stringify(values));
+        localStorage.setItem('session', JSON.stringify(data.user));
         navigate('/dashboard');
       } else {
         setErrors({ username: data.message });
@@ -78,7 +78,6 @@ const LoginPage = () => {
           )}
         </Formik>
 
-        {/* Register Link */}
         <div className="text-center mt-4">
           <p className="text-gray-600">
             New here? <Link to="/register" className="text-blue-600 hover:underline">Create an account</Link>
