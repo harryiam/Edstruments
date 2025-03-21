@@ -6,8 +6,11 @@ import { useNavigate, Link } from 'react-router-dom';
 const LoginPage = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState('');
 
-  const handleLogin = async (values, { setSubmitting, setErrors }) => {
+  const handleLogin = async (values, { setSubmitting }) => {
+    setServerError(''); // Clear previous error messages
+
     try {
       const response = await fetch('https://apisi-harry-edstruments.onrender.com/login', {
         method: 'POST',
@@ -21,10 +24,11 @@ const LoginPage = () => {
         localStorage.setItem('session', JSON.stringify(data.user));
         navigate('/dashboard');
       } else {
-        setErrors({ username: data.message });
+        setServerError(data.message || 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Error:', error);
+      setServerError('Something went wrong. Please try again.');
     }
 
     setSubmitting(false);
@@ -34,6 +38,9 @@ const LoginPage = () => {
     <div className="min-h-screen flex justify-center items-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        
+        {serverError && <p className="text-red-500 text-sm text-center mb-4">{serverError}</p>}
+
         <Formik
           initialValues={{ username: '', password: '' }}
           validationSchema={Yup.object({
@@ -49,6 +56,7 @@ const LoginPage = () => {
                 <Field name="username" className="w-full p-2 border rounded" />
                 <ErrorMessage name="username" className="text-red-500 text-sm" component="div" />
               </div>
+              
               <div className="relative">
                 <label className="block mb-1">Password</label>
                 <div className="flex items-center">
@@ -67,12 +75,13 @@ const LoginPage = () => {
                 </div>
                 <ErrorMessage name="password" className="text-red-500 text-sm" component="div" />
               </div>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
               >
-                Login
+                {isSubmitting ? 'Logging in...' : 'Login'}
               </button>
             </Form>
           )}
