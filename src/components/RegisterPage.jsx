@@ -10,7 +10,7 @@ const RegisterPage = () => {
 
   const handleRegister = async (values, { setSubmitting, setErrors }) => {
     try {
-      const response = await fetch('http://localhost:5000/register', {
+      const response = await fetch('https://apisi-harry-edstruments.onrender.com/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
